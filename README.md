@@ -4,6 +4,8 @@ Ansible-Docker-Python test task
 
 ## Run
 
+On Ubuntu or Debian:
+
 ```
 ansible-playbook docker.yml
 ```

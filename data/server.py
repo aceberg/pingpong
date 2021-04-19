@@ -4,9 +4,11 @@ import socket
 import time
 import sys
 
+pong_port = int(sys.argv[1])
 serv_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, proto=0)
-serv_sock.bind(('', int(sys.argv[1])))
+serv_sock.bind(('', pong_port))
 serv_sock.listen(10)
+print('Server listening on port', pong_port)
 
 while True:
 
