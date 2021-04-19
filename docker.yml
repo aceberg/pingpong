@@ -1,0 +1,51 @@
+---
+- name: Create Docker containers for Pingpong
+  hosts: ubuntu
+  become: true
+
+  vars:
+    - network_name: pingpong
+    - server_port: 8080
+
+  tasks:
+    - name: Install docker
+      apt:
+        name:
+          - docker.io
+          - python3-docker
+        state: present
+        update_cache: yes
+
+    - name: Copy data to host
+      copy:
+        src: data
+        dest: /tmp
+
+    - name: Create a network
+      docker_network:
+        name: '{{ network_name }}'
+
+    - name: Create server container
+      docker_container:
+        name: pong_server
+        state: started
+        image: python
+        exposed_ports: '{{ server_port }}'
+        command: "python3 -u /data/server.py '{{ server_port }}'"
+        volumes:
+          - /tmp/data:/data
+        networks:
+          - name: '{{ network_name }}'
+
+
+    - name: Create client container
+      docker_container:
+        name: ping_client
+        state: started
+        image: python
+        command: "python3 -u /data/client.py '{{ server_port }}'"
+        volumes:
+          - /tmp/data:/data
+        networks:
+          - name: '{{ network_name }}'
+            links: pong_server
